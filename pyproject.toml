@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=42"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,13 +7,17 @@ name = "pyecoreocl"
 version = "0.0.1"
 description = "Object Constraint Language (OCL) to Python Compiler"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
 authors = [{name = "Vincent Aranega", email = "vincent.aranega@gmail.com"}]
 urls = { "Bug Tracker" = "https://github.com/aranega/pyecoreocl", "Homepage" = "https://github.com/aranega/pyecoreocl" }
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Intended Audience :: Developers",
     "Topic :: Software Development",
     "Topic :: Software Development :: Libraries",
@@ -27,3 +31,15 @@ dependencies = [
 [tool.setuptools.package-dir]
 pyecoreocl = "./pyecoreocl"
 magic_ocl = "./magic_ocl"
+
+[project.optional-dependencies]
+test = ["pytest>=8", "pyecore"]
+
+[tool.setuptools.packages.find]
+include = ["pyecoreocl*", "magic_ocl*"]
+
+[tool.setuptools.package-data]
+"pyecoreocl.parser" = ["*.tokens", "*.interp"]
+
+[tool.setuptools.data-files]
+"share/pyecoreocl" = ["OclExpression.g4"]

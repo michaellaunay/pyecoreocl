@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from io import StringIO
 from token import ENDMARKER, NEWLINE, OP
+import token as token_types
 from tokenize import TokenInfo, generate_tokens, untokenize
 from typing import Iterable
 from pyecoreocl.compiler import dummy_compiler
@@ -51,11 +52,19 @@ def ocl2python(tokens: Iterable[TokenInfo], mode: str):
     current = None
     state = "end"
     shift = None
+    string_depth = 0
+    starts = {token_types.FSTRING_START, getattr(token_types, "TSTRING_START", -1)}
+    ends = {token_types.FSTRING_END, getattr(token_types, "TSTRING_END", -1)}
     for token in tokens:
+        if token.type in starts:
+            string_depth += 1
+        elif token.type in ends:
+            string_depth -= 1
         match token, state:
-            case TokenInfo(type=OP, string="!") as t, "end":
+            case TokenInfo(type=OP, string="!") as t, "end" if not string_depth:
                 state = "start"
                 shift = None
+                opening = t
                 current = OCLExpression(start=t.start, tokens=[])
             case TokenInfo(type=OP, string="!") as t, "start":
                 state = "end"
@@ -74,6 +83,11 @@ def ocl2python(tokens: Iterable[TokenInfo], mode: str):
                         token = adjust_position(tok, offset=shift)
                         current.end = token.end
                 yield token
+
+    if state == "start":
+        raise SyntaxError("Unclosed OCL expression",
+                          ("<magic_ocl>", opening.start[0],
+                           opening.start[1] + 1, opening.line))
 
 
 def preprocess(data: str, mode: str="normal"):

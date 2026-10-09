@@ -1,4 +1,5 @@
-from antlr4 import CommonTokenStream, InputStream
+from antlr4 import CommonTokenStream, InputStream, Token
+from antlr4.error.ErrorListener import ErrorListener
 
 from .dummy_rules import RuleSet, default_collection_call, default_primitive_call
 from .parser import OclExpressionVisitor, OclExpressionParser, OclExpressionLexer
@@ -294,12 +295,38 @@ class DummyVisitor(OclExpressionVisitor):
         return self.visitChildren(ctx)
 
 
+class _SyntaxErrors(ErrorListener):
+    def __init__(self, source):
+        self.lines = source.splitlines()
+
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        text = self.lines[line - 1] if line <= len(self.lines) else ""
+        raise SyntaxError(msg, ("<ocl>", line, column + 1, text))
+
+
 def dummy_compiler(s, mode="normal"):
+    """Translate one trusted OCL expression to Python source.
+
+    Invalid syntax raises a located SyntaxError; the result still needs the
+    runtime/import context used by the expression. This is not a sandbox or
+    a complete OCL semantic checker.
+    """
+    if mode not in ("normal", "strict"):
+        raise ValueError(f"Unknown compiler mode: {mode!r}")
+    errors = _SyntaxErrors(s)
     input_stream = InputStream(s)
     lexer = OclExpressionLexer(input_stream)
+    lexer.removeErrorListeners()
+    lexer.addErrorListener(errors)
     stream = CommonTokenStream(lexer)
     parser = OclExpressionParser(stream)
+    parser.removeErrorListeners()
+    parser.addErrorListener(errors)
     tree = parser.oclExp()
+    if stream.LA(1) != Token.EOF:
+        token = parser.getCurrentToken()
+        errors.syntaxError(parser, token, token.line, token.column,
+                           f"Unexpected trailing input: {token.text!r}", None)
     visitor = DummyVisitor(mode=mode)
     tree.accept(visitor)
     return visitor.result

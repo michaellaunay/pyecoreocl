@@ -4,7 +4,7 @@ This project aims to provide an Object Constraint Language (OCL) to Python compi
 This parser will be used to parse OCL expressions in `.ecore` documentation and automatically fill python implementation when possible.
 The project also includes a way to directly inline OCL code in Python code: the OCL code is compiled in Python code and directly embedded in the Python code line.
 The inline OCL code can reference Python objects (Python variables and functions in your code) and the execution returns Python object that can be directly manipulated by Python.
-PyEcoreOCL is compatible with PyEcore, but PyEcore is a dependency or a requirement.
+PyEcoreOCL is compatible with PyEcore, but PyEcore is not required for expressions over ordinary Python objects.
 PyEcoreOCL can take full Python objects and do not relies on PyEcore objects, unless some specific operations implying EMF related operations are used.
 
 The project is takes inspiration on the work of [Anthony Beuchey](https://github.com/Beuchey) that wrote a [textX](https://github.com/textX/textX) grammar for OCL and a set of wrappers that enables OCL api on Python objects, as well as on the work of [CrossEcore](https://github.com/crossecore) about the grammar for [OCLInEcore](https://github.com/crossecore/oclinecore).
@@ -218,3 +218,20 @@ Currently, some expressions are not well recognized, or not properly compiled:
 
 * `obj->operation()`: in the specification, `->` acts as an automatic wrapper to a `Sequence` if `obj` is not a collection. Currently, PyEcoreOCL doesn't consider this automatic wrapping for strict mode, but partially implement it for the normal mode.
 * `collection->collect(attr)`: when there is no variable that is considered by the lambda inside collection operations, by default `attr` should be considered as attribute of an implicit `self` variable representing at each iteration one of the elements of `collection`. Currently, this is not supported, and it's not sure it will be for inline OCL. To overcome this, it's currently necessary to explicitally name the variable inside the lambda `collection->collect(e | e.attr)`.
+
+## Python compatibility and qualification
+
+The migration targets CPython 3.12–3.14 with the GIL. The explicit
+`dummy_compiler(expression, mode="normal")` API is the reference path: it returns
+Python source, reports invalid input with a located `SyntaxError`, and accepts
+`normal` or `strict` mode. See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) for
+runtime bindings, codec qualification, known historical semantic limits, and
+traceable UML expression candidates. These trusted-fixture checks do not establish
+full OCL conformance or provide a sandbox.
+
+The existing `magic_codec` dependency is retained for compatibility with files
+using the encoding headers documented above. Explicit compilation does not import
+or require its codec registration; the two paths are tested separately.
+
+The `test` extra includes pytest and PyEcore for integration fixtures. In the
+migration workspace, supply the qualified local PyEcore fork, as the harness does.

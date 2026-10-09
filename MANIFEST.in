@@ -1,0 +1,4 @@
+include LICENSE README.md OclExpression.g4
+recursive-include tests *.py *.json
+recursive-include pyecoreocl/parser *.tokens *.interp
+recursive-include docs *.md

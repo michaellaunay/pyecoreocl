@@ -1,0 +1,41 @@
+[
+  {
+    "context": "Property",
+    "operation": "isComposite",
+    "result_type": "Boolean",
+    "expression": "(aggregation = AggregationKind::composite)",
+    "status": "supported-explicit-bindings",
+    "source": {
+      "path": "repos/pyuml2/model/uml.ecore",
+      "sha256": "20cd5d8f6a7554052ad156db54b6855fc7eb47c4d9d88af53a896ca434035936",
+      "nsURI": "http://www.eclipse.org/uml2/5.0.0/UML",
+      "xpath": "eClassifiers[@name='Property']/eOperations[@name='isComposite']/eAnnotations[@source='http://www.eclipse.org/emf/2002/GenModel']/details[@key='documentation']"
+    }
+  },
+  {
+    "context": "NamedElement",
+    "operation": "separator",
+    "result_type": "String",
+    "expression": "('::')",
+    "status": "supported",
+    "source": {
+      "path": "repos/pyuml2/model/uml.ecore",
+      "sha256": "20cd5d8f6a7554052ad156db54b6855fc7eb47c4d9d88af53a896ca434035936",
+      "nsURI": "http://www.eclipse.org/uml2/5.0.0/UML",
+      "xpath": "eClassifiers[@name='NamedElement']/eOperations[@name='separator']/eAnnotations[@source='http://www.eclipse.org/emf/2002/GenModel']/details[@key='documentation']"
+    }
+  },
+  {
+    "context": "Class",
+    "operation": "getSuperClasses",
+    "result_type": "Set(Class)",
+    "expression": "(self.general()->select(oclIsKindOf(Class))->collect(oclAsType(Class))->asSet())",
+    "status": "unsupported-implicit-iterator",
+    "source": {
+      "path": "repos/pyuml2/model/uml.ecore",
+      "sha256": "20cd5d8f6a7554052ad156db54b6855fc7eb47c4d9d88af53a896ca434035936",
+      "nsURI": "http://www.eclipse.org/uml2/5.0.0/UML",
+      "xpath": "eClassifiers[@name='Class']/eOperations[@name='getSuperClasses']/eAnnotations[@source='http://www.eclipse.org/emf/2002/GenModel']/details[@key='documentation']"
+    }
+  }
+]
