@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=77"]
+requires = ["setuptools>=83.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -33,7 +33,7 @@ pyecoreocl = "./pyecoreocl"
 magic_ocl = "./magic_ocl"
 
 [project.optional-dependencies]
-test = ["pytest>=8", "pyecore"]
+test = ["pytest>=9.0.3", "pyecore"]
 
 [tool.setuptools.packages.find]
 include = ["pyecoreocl*", "magic_ocl*"]
